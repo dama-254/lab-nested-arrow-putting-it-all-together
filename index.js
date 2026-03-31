@@ -1,37 +1,41 @@
 function createLoginTracker(userInfo) {
     let attempts = 0;
-    let isLocked = false;
+    let locked = false;
 
-    // Inner arrow function (closure)
+    // Return INNER ARROW FUNCTION
     return (username, password) => {
 
-        if (isLocked) {
-            return "Account is locked. Too many failed attempts.";
+        // If already locked
+        if (locked) {
+            return "Account locked";
         }
 
+        // Correct credentials
         if (username === userInfo.username && password === userInfo.password) {
-            attempts = 0; // reset attempts on success
-            return "Login successful!";
-        } else {
+            attempts = 0;
+            return "Login successful";
+        } 
+        
+        // Wrong credentials
+        else {
             attempts++;
 
+            // Lock after 3 attempts
             if (attempts >= 3) {
-                isLocked = true;
-                return "Account locked after 3 failed attempts.";
+                locked = true;
+                return "Account locked";
             }
 
-            return `Login failed. Attempts remaining: ${3 - attempts}`;
+            return "Login failed";
         }
     };
 }
-const user = {
+const login = createLoginTracker({
     username: "admin",
     password: "1234"
-};
+});
 
-const login = createLoginTracker(user);
-
-console.log(login("admin", "wrong")); // محاولة 1
-console.log(login("admin", "wrong")); // محاولة 2
-console.log(login("admin", "wrong")); // locks account
-console.log(login("admin", "1234"));  // still locked
+console.log(login("admin", "wrong")); // Login failed
+console.log(login("admin", "wrong")); // Login failed
+console.log(login("admin", "wrong")); // Account locked
+console.log(login("admin", "1234"));  // Account locked
