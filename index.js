@@ -1,38 +1,37 @@
-function createLoginSystem() {
-    let attempts = 3;
+function createLoginTracker(userInfo) {
+    let attempts = 0;
+    let isLocked = false;
 
-    const correctUsername = "admin";
-    const correctPassword = "1234";
-
+    // Inner arrow function (closure)
     return (username, password) => {
-        // 1. Check if already locked
-        if (attempts <= 0) {
-            console.log("Account locked!");
-            return; 
+
+        if (isLocked) {
+            return "Account is locked. Too many failed attempts.";
         }
 
-        // 2. Check credentials
-        if (username === correctUsername && password === correctPassword) {
-            console.log("Login successful!");
-            return; // EXIT HERE so it doesn't hit the 'else' below
+        if (username === userInfo.username && password === userInfo.password) {
+            attempts = 0; // reset attempts on success
+            return "Login successful!";
         } else {
-            // 3. Handle failure
-            attempts--;
-            console.log("Wrong details. Attempts left: " + attempts);
+            attempts++;
+
+            if (attempts >= 3) {
+                isLocked = true;
+                return "Account locked after 3 failed attempts.";
+            }
+
+            return `Login failed. Attempts remaining: ${3 - attempts}`;
         }
     };
 }
+const user = {
+    username: "admin",
+    password: "1234"
+};
 
+const login = createLoginTracker(user);
 
-  module.exports = {
-    createLoginTracker: createLoginSystem
-  };
-
-const login = createLoginSystem();
-
-login("admin", "wrong"); 
-login("admin", "wrong"); 
-login("admin", "1234");  
-login("admin", "1234"); 
-
-
+console.log(login("admin", "wrong")); // محاولة 1
+console.log(login("admin", "wrong")); // محاولة 2
+console.log(login("admin", "wrong")); // locks account
+console.log(login("admin", "1234"));  // still locked
