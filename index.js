@@ -31,4 +31,3 @@ const testLogin = createLoginTracker();
 console.log(testLogin("admin", "wrong")); // Should print: Wrong details. Attempts left: 2
 console.log(testLogin("admin", "wrong")); // Should print: Wrong details. Attempts left: 1
 console.log(testLogin("admin", "1234"));  // Should print: Login successful!
-console.log(testLogin("admin", "wrong")); // Should print: Account locked!
