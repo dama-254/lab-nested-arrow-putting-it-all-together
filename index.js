@@ -1,31 +1,24 @@
 function createLoginTracker(userInfo) {
-    let attempts = 0;
-    let isLocked = false;
+    let wrongAttempts = 0;
 
-    // RETURN arrow function
+    // Return arrow function
     return (username, password) => {
 
-        // If already locked
-        if (isLocked) {
+        // ✅ Always allow correct login FIRST
+        if (username === userInfo.username && password === userInfo.password) {
+            wrongAttempts = 0; // reset attempts
+            return "Login successful";
+        }
+
+        // ❌ Wrong login
+        wrongAttempts++;
+
+        // ❌ Lock only AFTER 3 failed attempts
+        if (wrongAttempts >= 3) {
             return "Account locked";
         }
 
-        // Correct login
-        if (username === userInfo.username && password === userInfo.password) {
-            return "Login successful";
-        } 
-        
-        // Incorrect login
-        else {
-            attempts++;
-
-            if (attempts >= 3) {
-                isLocked = true;
-                return "Account locked";
-            }
-
-            return "Login failed";
-        }
+        return "Login failed";
     };
 }
 const login = createLoginTracker({
@@ -33,7 +26,9 @@ const login = createLoginTracker({
     password: "1234"
 });
 
-console.log(login("admin", "wrong"));
-console.log(login("admin", "wrong"));
-console.log(login("admin", "wrong"));
-console.log(login("admin", "1234"));
+console.log(login("admin", "wrong")); // Login failed
+console.log(login("admin", "wrong")); // Login failed
+console.log(login("admin", "1234"));  // Login successful ✅
+console.log(login("admin", "wrong")); // Login failed
+console.log(login("admin", "wrong")); // Login failed
+console.log(login("admin", "wrong")); // Account locked
