@@ -1,33 +1,42 @@
 function createLoginTracker() {
-  let attempts = 3;
+  let attempts = 0; // Track wrong attempts
+  const maxAttempts = 3;
   const correctUsername = "admin";
   const correctPassword = "1234";
 
-  // The test needs this returned arrow function
+  // Requirement: Should return a function
   return (username, password) => {
-    if (attempts <= 0) {
+    // 1. Check if already locked
+    if (attempts >= maxAttempts) {
       return "Account locked!";
     }
 
+    // 2. Requirement: Allow correct login immediately or after failure
     if (username === correctUsername && password === correctPassword) {
-      attempts = 3; // Reset attempts on success
+      attempts = 0; // Reset count on success
       return "Login successful!";
     } else {
-      attempts--;
-      // Ensure this matches the expected test string exactly
-      return "Wrong details. Attempts left: " + attempts;
+      // 3. Requirement: Keep track of wrong login count
+      attempts++;
+      
+      // 4. Requirement: Limit attempts to 3
+      // If we just hit 3, return locked immediately
+      if (attempts >= maxAttempts) {
+        return "Account locked!";
+      }
+
+      return "Wrong details. Attempts left: " + (maxAttempts - attempts);
     }
   };
 }
 
-// Export the correct name
 module.exports = {
   createLoginTracker
 };
-// 1. Create an instance of your tracker
 const testLogin = createLoginTracker();
 
-// 2. Wrap the calls in console.log() to see the results
-console.log(testLogin("admin", "wrong")); // Should print: Wrong details. Attempts left: 2
-console.log(testLogin("admin", "wrong")); // Should print: Wrong details. Attempts left: 1
-console.log(testLogin("admin", "1234"));  // Should print: Login successful!
+// We use console.log to "see" the returned string
+console.log(testLogin("admin", "wrong"));   // Expected: "Wrong details. Attempts left: 2"
+console.log(testLogin("admin", "wrong"));   // Expected: "Wrong details. Attempts left: 1"
+console.log(testLogin("admin", "1234"));    // Expected: "Login successful!"
+console.log(testLogin("admin", "wrong"));   // Expected: "Account locked!" (already used 3 tries)
